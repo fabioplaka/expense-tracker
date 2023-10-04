@@ -13,16 +13,16 @@ const expensesReducer = (state, action) => {
   switch (action.type) {
     case "ADD":
       const id = generateId();
-      return [{ ...action.payload }, ...state];
+      return [{ ...action.payload, id }, ...state];
     case "UPDATE":
       const updatableExpenseIndex = state.findIndex(
         (expense) => expense.id === action.payload.id
       );
       const updatableExpense = state[updatableExpenseIndex];
       const updatedItem = { ...updatableExpense, ...action.payload.data };
-      const updatableExpenses = [...state];
-      updatableExpenses[updatableExpenseIndex] = updatedItem;
-      return updatableExpense;
+      const updatedExpenses = [...state];
+      updatedExpenses[updatableExpenseIndex] = updatedItem;
+      return updatedExpenses;
     case "DELETE":
       return state.filter((expense) => expense.id !== action.payload);
     default:

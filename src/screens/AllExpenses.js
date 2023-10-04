@@ -1,9 +1,18 @@
-import { StyleSheet, Text, View } from "react-native";
-import React from "react";
+import { StyleSheet } from "react-native";
+import React, { useContext } from "react";
 import ExpensesOutput from "../components/ExpensesOutput/ExpensesOutput";
+import { ExpensesContext } from "../store/expenses-context";
 
 const AllExpenses = () => {
-  return <ExpensesOutput expensesPeriod="Total" />;
+  const expensesContext = useContext(ExpensesContext);
+
+  return (
+    <ExpensesOutput
+      expenses={expensesContext.expenses}
+      expensesPeriod="Total"
+      fallbackText={"No registered expenses"}
+    />
+  );
 };
 
 export default AllExpenses;

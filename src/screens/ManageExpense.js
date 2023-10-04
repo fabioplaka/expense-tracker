@@ -1,13 +1,18 @@
-import { StyleSheet, Text, View } from "react-native";
-import React, { useContext, useLayoutEffect } from "react";
+import { StyleSheet, View } from "react-native";
+import React, { useContext, useLayoutEffect, useState } from "react";
 import IconButton from "../components/UI/IconButton";
 import { GlobalStyles } from "../constants/styles";
-import Button from "../components/UI/Button";
 import { ExpensesContext } from "../store/expenses-context";
 import ExpenseForm from "../components/ManageExpense/ExpenseForm";
 import { storeExpense } from "../api/storeExpense";
+import { updateExpense } from "../api/updateExpense";
+import { deleteExpense } from "../api/deleteExpense";
+import Loader from "../components/UI/Loader";
 
 const ManageExpense = ({ route, navigation }) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState();
+
   const expensesContext = useContext(ExpensesContext);
 
   const editedExpenseId = route.params?.expenseId;
@@ -23,22 +28,45 @@ const ManageExpense = ({ route, navigation }) => {
   }, [navigation, editedExpenseId]);
 
   const confirmHandler = async (expenseData) => {
-    if (!!editedExpenseId) {
-      expensesContext.updateExpense(editedExpenseId, expenseData);
-    } else {
-      const id = await storeExpense(expenseData);
-      expensesContext.addExpense({ ...expenseData, id });
+    setLoading(true);
+    try {
+      if (!!editedExpenseId) {
+        expensesContext.updateExpense(editedExpenseId, expenseData);
+        await updateExpense(editedExpenseId, expenseData);
+      } else {
+        const id = await storeExpense(expenseData);
+        expensesContext.addExpense({ ...expenseData, id });
+      }
+      navigation.goBack();
+    } catch {
+      setError("Could not save data, please try again later");
+      setLoading(true);
     }
-    navigation.goBack();
   };
 
   const cancelHandler = () => {
     navigation.goBack();
   };
 
-  const deleteExpenseHandler = () => {
-    navigation.goBack();
+  const deleteExpenseHandler = async () => {
+    setLoading(true);
+    try {
+      await deleteExpense(editedExpenseId);
+      expensesContext.deleteExpense(editedExpenseId);
+      navigation.goBack();
+    } catch (error) {
+      setError("Could not delete expense, please try again later");
+      setLoading(false);
+    }
   };
+
+  if (error && !loading) {
+    return <Error message={error} />;
+  }
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <View style={styles.container}>

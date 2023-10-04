@@ -1,4 +1,4 @@
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import React, { useState } from "react";
 import Input from "./Input";
 import Button from "../UI/Button";
@@ -94,8 +94,6 @@ const ExpenseForm = ({ onCancel, onSubmit, submitLabel, defaultValues }) => {
         invalid={!inputs.description.isValid}
         textInputConfig={{
           multiline: true,
-          // autoCapitalize: 'none',
-          // autoCorrect: false,
           onChangeText: inputHandler.bind(this, "description"),
           value: inputs.description.value,
         }}
